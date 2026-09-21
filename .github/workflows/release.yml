@@ -1,7 +1,12 @@
 name: Release
 
 # Pending changesets → "Version Packages" PR. Merging that PR publishes to npm.
-# Needs the NPM_TOKEN repository secret (npm automation token).
+#
+# Publishing uses npm trusted publishing (OIDC): no NPM_TOKEN, no 2FA bypass.
+# npmjs.com → package "bidancer" → Settings → Trusted publisher → GitHub
+# Actions, owner Bidancer, repo bidancer-sdk-js, workflow release.yml. That is
+# what id-token: write below is for. Needs npm >= 11.5.1, hence the upgrade
+# step — Node 22 ships npm 10.
 #
 # Opening that PR needs a token allowed to create pull requests. The Bidancer
 # org policy forbids GITHUB_TOKEN from doing so ("GitHub Actions is not
@@ -34,7 +39,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
+      # No registry-url above on purpose: it writes an .npmrc that expects
+      # NODE_AUTH_TOKEN, which OIDC publishing does not have.
+      - run: npm install -g npm@latest && npm --version
       - run: bun install --frozen-lockfile
       - run: bun test
       - uses: changesets/action@v1
@@ -45,6 +52,4 @@ jobs:
           title: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.CHANGESETS_TOKEN || secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
