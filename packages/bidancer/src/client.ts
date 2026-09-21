@@ -1,6 +1,8 @@
 import { BidancerError } from "./error";
 
-export const DEFAULT_BASE_URL = "https://app.bidancer.com/api/influencer";
+// Developer API host (dev-bff in bidancer-frontends). `/v1` is the API version,
+// independent of this package's own version.
+export const DEFAULT_BASE_URL = "https://api.bidancer.com/v1/influencer";
 
 export interface ClientOptions {
     /** Override for self-hosted or staging environments. */

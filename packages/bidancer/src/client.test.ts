@@ -26,7 +26,7 @@ describe("Bidancer server client", () => {
         });
         expect(r).toEqual({ attributed: true, campaignId: "c1", id: "cv1", replayed: false });
         const call = f.last();
-        expect(call.url).toBe("https://app.bidancer.com/api/influencer/conversions");
+        expect(call.url).toBe("https://api.bidancer.com/v1/influencer/conversions");
         expect((call.init.headers as Record<string, string>).authorization).toBe(
             "Bearer sk_test_1",
         );
@@ -40,12 +40,12 @@ describe("Bidancer server client", () => {
     test("maps error envelopes to BidancerError", async () => {
         const f = fakeFetch(401, { code: "INVALID_KEY", message: "nope", status: "error" });
         const p = new Bidancer("sk_x", {
-            baseUrl: "https://stg/api/influencer/",
+            baseUrl: "https://dev-api.stg.bidancer.com/v1/influencer/",
             fetch: f.fetch,
         }).conversions.create({ event: "lead", externalRef: "L1" });
         await expect(p).rejects.toBeInstanceOf(BidancerError);
         await expect(p).rejects.toMatchObject({ code: "INVALID_KEY", status: 401 });
-        expect(f.last().url).toBe("https://stg/api/influencer/conversions");
+        expect(f.last().url).toBe("https://dev-api.stg.bidancer.com/v1/influencer/conversions");
     });
 
     test("rejects a public key", () => {
@@ -65,7 +65,7 @@ describe("bidancerBrowser", () => {
         });
         expect(r.id).toBe("cv2");
         const call = f.last();
-        expect(call.url).toBe("https://app.bidancer.com/api/influencer/public/conversions");
+        expect(call.url).toBe("https://api.bidancer.com/v1/influencer/public/conversions");
         expect((call.init.headers as Record<string, string>)["x-bidancer-key"]).toBe("pk_1");
     });
 });

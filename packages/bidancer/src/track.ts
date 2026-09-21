@@ -11,7 +11,7 @@ import type { ConvertInput } from "./core";
 type Command = "init" | "convert";
 interface InitOptions {
     key?: string;
-    /** Base URL, e.g. "https://app.bidancer.com/api/influencer". */
+    /** Base URL, e.g. "https://api.bidancer.com/v1/influencer". */
     endpoint?: string;
 }
 
