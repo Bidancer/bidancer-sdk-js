@@ -2,6 +2,14 @@ name: Release
 
 # Pending changesets → "Version Packages" PR. Merging that PR publishes to npm.
 # Needs the NPM_TOKEN repository secret (npm automation token).
+#
+# Opening that PR needs a token allowed to create pull requests. The Bidancer
+# org policy forbids GITHUB_TOKEN from doing so ("GitHub Actions is not
+# permitted to create or approve pull requests"), so either an org admin
+# enables it (org Settings → Actions → General → Workflow permissions, then the
+# same toggle on this repo), or add a CHANGESETS_TOKEN repository secret: a
+# fine-grained PAT scoped to this repo with Contents + Pull requests
+# read/write. When present it is used instead of GITHUB_TOKEN.
 on:
   push:
     branches: [main]
@@ -36,7 +44,7 @@ jobs:
           commit: "chore: version packages"
           title: "chore: version packages"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CHANGESETS_TOKEN || secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
